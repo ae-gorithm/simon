@@ -31,7 +31,24 @@ set으로 구현하는 것이 맞나?
 
 K = int(input())
 answers = []
-
+           
+def dfs(start, visited, edges, count = 0):
+    stack = [(1, start)]
+    while stack:
+        order, curr_node = stack.pop()
+        if visited[curr_node]:
+            continue
+        edge = edges[curr_node]
+        if any(visited[next_node] == order for next_node in edge):
+            return 'NO', count
+        visited[curr_node] = order
+        order *= -1
+        count += 1
+        for next_node in edge:
+            if visited[next_node] == 0:
+                stack.append((order, next_node))
+    return 'YES', count
+    
 for _ in range(K):
     V, E = map(int, input().split())
     edges = [None] + [[] for _ in range(V)]
@@ -39,34 +56,14 @@ for _ in range(K):
         u, v = map(int, input().split())
         edges[u].append(v)
         edges[v].append(u)
-    
-    node_sets = [set(), set()]
-    
-    answer = 'YES'
-    stack = []
-    while sum(len(node_set) for node_set in node_sets) < V:
-        for start_node in range(1, V+1):
-            if any(start_node in node_set for node_set in node_sets):
-                continue
-            else:
-                break
-        stack.append((0, start_node))
         
-        while stack:
-            order, curr_node = stack.pop()
-            if any(curr_node in node_set for node_set in node_sets):
-                continue
-            edge = edges[curr_node]
-            if any(next_node in node_sets[order] for next_node in edge):
-                answer = 'NO'
-                break
-            node_sets[order].add(curr_node)
-            order = (order + 1) % 2
-            for next_node in edge:
-                stack.append((order, next_node))            
-            
-        if answer == 'NO':
-            break
+    visited = [None] + [0] * (V)
+    count = 0
+    answer = 'YES'
+    while count < V:
+        start = visited.index(0)
+        answer, count = dfs(start, visited, edges, count)
+        if answer == 'NO': break
     answers.append(answer)
     
 print(*answers, sep='\n')
