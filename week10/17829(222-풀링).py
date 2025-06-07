@@ -13,12 +13,12 @@ def convolution(board, STRIDE):
     if n == 1:
         return board
     
-    new_board = [[0] * (n // 2) for _ in range(n // 2)]
+    new_board = [[0] * (n // STRIDE) for _ in range(n // STRIDE)]
     
     for i in range(0, n, STRIDE):
         for j in range(0, n, STRIDE):
-            value = sorted(board[i][j:j+2] + board[i+1][j:j+2])[2]
-            new_board[i//2][j//2] = value
+            value = sorted(board[i][j:j+STRIDE] + board[i+1][j:j+STRIDE])[2]
+            new_board[i//STRIDE][j//STRIDE] = value
             
     return convolution(new_board, STRIDE)
 
