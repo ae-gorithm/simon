@@ -26,41 +26,37 @@
 """
 from collections import deque
 N, K = map(int, input().split())
-A = list(map(int, input().split()))
-onstage = deque(A[:N])
-offstage = deque(A[N:])
-robot_onstage = deque([False] * N)
+belt = deque(map(int, input().split()))
+robots = deque([False] * N)
 
-def rotate(onstage, offstage, robot_onstage):
-    offstage.appendleft(onstage.pop())
-    onstage.appendleft(offstage.pop())
-    robot_onstage.pop()
-    robot_onstage.appendleft(False)
-    robot_onstage[-1] = False
-    return onstage, offstage, robot_onstage
+def rotate(belt, robots):
+    belt.appendleft(belt.pop())
+    robots.pop()
+    robots.appendleft(False)
+    robots[-1] = False
+    return belt, robots
 
-def put_robot(i, cnt, onstage, robot_onstage):
-    robot_onstage[i] = True
-    onstage[i] = onstage[i]-1
-    cnt += 1 if onstage[i] == 0 else 0
-    robot_onstage[-1] = False
-    return cnt, onstage, robot_onstage
+def put_robot(i, cnt, belt, robots):
+    robots[i] = True
+    belt[i] -= 1
+    cnt += 1 if belt[i] == 0 else 0
+    robots[-1] = False
+    return cnt, belt, robots
 
-def move_robot(i, j, cnt, onstage, robot_onstage):
-    if not robot_onstage[j] and onstage[j] > 0:
-        robot_onstage[i] = False
-        cnt, onstage, robot_onstage = put_robot(j, cnt, onstage, robot_onstage)
-    return cnt, onstage, robot_onstage
+def move_robot(i, j, cnt, belt, robots):
+    if not robots[j] and belt[j] > 0:
+        robots[i] = False
+        cnt, belt, robots = put_robot(j, cnt, belt, robots)
+    return cnt, belt, robots
 
 cnt = 0
 step = 0
 while cnt < K:
     step += 1
-    onstage, offstage, robot_onstage = rotate(onstage, offstage, robot_onstage)
-    robots = [(i, robot) for i, robot in enumerate(robot_onstage) if robot]
-    for i, robot in reversed(robots):
-        cnt, onstage, robot_onstage = move_robot(i, i+1, cnt, onstage, robot_onstage)
-    if onstage[0] > 0:
-        cnt, onstage, robot_onstage = put_robot(0, cnt, onstage, robot_onstage)
-    print(onstage, offstage, robot_onstage, cnt)
+    belt, robots = rotate(belt, robots)
+    valid_robots = [(i, robot) for i, robot in enumerate(robots) if robot]
+    for i, robot in reversed(valid_robots):
+        cnt, belt, robots = move_robot(i, i+1, cnt, belt, robots)
+    if belt[0] > 0:
+        cnt, belt, robots = put_robot(0, cnt, belt, robots)
 print(step)
