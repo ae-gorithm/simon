@@ -18,9 +18,43 @@ n이 500이다 => n**3도 가능하다.
 ㅇㅋ 그렇게 가보자. 그럼 관리는? Set으로 하는걸로. Set 2개를 둘 필요는 없겠지? 그냥 하나 두고 돌면서 넣자.
 순회마다 Set을 돌고, 또 전체 Set을 둬야할 것 같다. 그래서 그 Set에 없는 것 위주로
 """
+from collections import deque
+import sys
+input = lambda : sys.stdin.readline().rstrip()
 
-N, M = map(int, input())
-graph = [[] for _ in range(N+1)]
-for _ in range(M):
-    a, b = map(int, input().split())
-    
+case = 1
+while True:
+    N, M = map(int, input().split())
+    if N == 0 and M == 0:
+        break
+    graph = [[] for _ in range(N+1)]
+    for _ in range(M):
+        a, b = map(int, input().split())
+        graph[a].append(b)
+        graph[b].append(a)
+        
+    tree_cnt = 0
+    remained = set(e for e in range(1, N+1))
+
+    while remained:
+        e = remained.pop()
+        visited = set()
+        q = deque([(e, 0)])
+        is_cycle = False
+        
+        while q:
+            c, p = q.popleft()
+            if c in visited:
+                is_cycle = True
+                continue
+            visited.add(c) 
+            for n in graph[c]:
+                if n != p:
+                    q.append((n, c))
+        
+        remained -= visited
+        tree_cnt += 0 if is_cycle else 1
+        
+    result = f"Case {case}: " + ("No trees." if tree_cnt == 0 else "There is one tree." if tree_cnt == 1 else f"A forest of {tree_cnt} trees.")
+    print(result)
+    case += 1
