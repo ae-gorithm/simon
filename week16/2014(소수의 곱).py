@@ -8,21 +8,29 @@
 하나씩 다 곱하면서, max보다 큰거까지만 넣을까?
 
 그냥 다 넣는다고 생각해보자.
+
+메모리 초과 이유 -> 하나당 100개가 더 추가된다.
+일단 지금 하는대로 하고, pop을 해보자. 그럼 heap을 쓰면 안될 것 같은데.
+
+애초에 중복되지 않는것만 넣을 수 없나?
+
 """
 from heapq import heappush, heappop
     
+MAX = 2 ** 31
 K, N = map(int, input().split())
 primes = tuple(map(int, input().split()))
 
-visited = set()
 heap = [1]
 
 for _ in range(N):
     item = heappop(heap)
     for p in primes:
-        if item*p in visited:
+        val = item*p
+        if val >= MAX:
             continue
-        visited.add(item*p)
-        heappush(heap, item*p)
+        heappush(heap, val)
+        if item % p == 0:
+            break
 
 print(heap[0])
