@@ -27,7 +27,7 @@ input = lambda: sys.stdin.readline().rstrip()
 
 N = int(input())
 graph = [None] + [[] for _ in range(N)]
-dp = [None for _ in range(N+1)]
+dp = [[0, 0] for _ in range(N+1)]
 
 for _ in range(N-1):
     u, v = map(int, input().split())
@@ -35,7 +35,6 @@ for _ in range(N-1):
     graph[v].append(u)
     
 def dfs(i, p):
-    dp[i] = [0, 0]
     for j in graph[i]:
         if j == p:
             continue
